@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:,">
+<title>SPIDERWEB // memecoin paper desk</title>
+<link rel="stylesheet" href="style.css?v=b5a43150e7">
+</head><body>
+<header class="top">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3">
+      <path d="M32 6c-12 0-20 9-20 20 0 7 3 11 7 14v8h26v-8c4-3 7-7 7-14 0-11-8-20-20-20z"/>
+      <circle cx="24" cy="28" r="5" fill="currentColor"/><circle cx="40" cy="28" r="5" fill="currentColor"/>
+      <path d="M29 38l3-4 3 4M24 48v6M32 48v6M40 48v6"/></g></svg>
+    <div class="name">SPIDER<span>WEB</span></div>
+  </div>
+  <nav class="nav" id="nav"><a href="#/" data-pg="dash">Dashboard</a><a href="#/trades" data-pg="trades">Trades</a></nav>
+  <div class="pills">
+    <span class="pill paper" title="Every dollar here is simulated. No real money, no real orders.">PAPER</span>
+    <span class="pill" id="pEngine" title=""><i></i>LIVE</span>
+    <button class="burger" id="navBtn" type="button" aria-label="menu" aria-expanded="false"><i></i><i></i><i></i></button>
+  </div>
+</header>
+
+<main id="pgDash">
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hk big"><label>Paper balance <b class="i" tabindex="0" data-tip="All bots together: the team's $10,000 + LEARNER $1,000 + AXIOM SIM $1,000 + DEGEN $100. Simulated money, after every fee.">i</b></label><div class="num" id="hBal">—</div><div class="hd" id="hBalD"></div></div>
+  <div class="hk"><label>Today</label><div class="num" id="hToday">—</div></div>
+  <div class="hk"><label>Live trades</label><div class="num" id="hLive">—</div></div>
+</section>
+
+<!-- BOT CARDS -->
+<section class="agents" id="agents"></section>
+
+<!-- WEB -->
+<section class="panel" id="p-web">
+  <h2>THE WEB <b class="i" tabindex="0" data-tip="The bots' home. Orb colour: cyan scanning, yellow in a trade, green up, pink down. Ring = win rate. Dots on the threads = open positions. Tap a node or a dot for details.">i</b><button class="tog" id="extTog" type="button">TradeLab</button></h2>
+  <div class="webwrap">
+    <canvas id="web"></canvas>
+    <div id="webCard" class="webcard" hidden></div>
+  </div>
+</section>
+
+<!-- TAPE -->
+<section class="panel" id="p-tape">
+  <h2>TRADES <em>latest across all bots</em></h2>
+  <div id="tape" class="tape compact"></div>
+</section>
+
+<section class="panel trends" id="p-trends"></section>  <!-- TRENDS: what's hot (app.js renderTrends) -->
+
+<!-- BOT PANELS (collapsed) -->
+<details class="panel acc" id="p-team">
+  <summary><b>TEAM DESK</b><span class="hl" id="sTeam">—</span></summary>
+  <div class="kpis">
+    <div class="kpi"><label>Account <b class="i" tabindex="0" data-tip="Cash plus open positions at their sell value after fees. Starts at $10,000 paper.">i</b></label><div class="num" id="kEq">$—</div><div class="delta" id="kEqD"></div></div>
+    <div class="kpi"><label>Today</label><div class="num" id="kToday">—</div></div>
+    <div class="kpi"><label>Total</label><div class="num" id="kTotal">—</div></div>
+    <div class="kpi"><label>Fees <b class="i" tabindex="0" data-tip="Exchange / pool / network fees. Slippage is extra and baked into fills.">i</b></label><div class="num neg" id="kFees">—</div><div class="delta" id="kSlip"></div></div>
+  </div>
+  <div class="chartbox"><canvas id="eqChart"></canvas></div>
+  <h3>LAST VOTE</h3>
+  <div class="vote" id="vote"><div class="empty">Waiting for a vote.</div></div>
+  <h3>OPEN</h3>
+  <div id="positions"></div>
+  <h3>MARKET <em id="pairLabel"></em></h3>
+  <div class="ana">
+    <div class="ana-chart">
+      <div class="pairrow"><span id="pairName" class="pair">PEPE/USDT</span><span id="pairPx" class="px">—</span><span id="pairChg" class="chg"></span></div>
+      <canvas id="candles"></canvas>
+      <div class="tickers" id="tickers"></div>
+    </div>
+    <div class="ana-list">
+      <div class="listhead">SCREENER <b class="i" tabindex="0" data-tip="PASS = team bought (paper). HOLD = not yet. FAIL = rejected.">i</b></div>
+      <div class="scroller"><div id="screen" class="scr"></div></div>
+    </div>
+  </div>
+  <h3>STATS <em>after fees</em></h3>
+  <div id="stats" class="stats"></div>
+</details>
+
+<details class="panel acc axiom" id="p-axiom">
+  <summary><b>AXIOM SIM</b><span class="hl" id="sAx">—</span></summary>
+  <div class="sub" id="aStatus" title="Simulation only: free public data (pump.fun, DexScreener, GeckoTerminal, RugCheck). Not connected to axiom.trade, no wallet, no account.">simulated, no wallet</div>
+  <div class="kpis ak">
+    <div class="kpi"><label>Balance</label><div class="num" id="aEq">—</div><div class="delta" id="aEqD"></div></div>
+    <div class="kpi"><label>Win rate</label><div class="num" id="aWr">—</div><div class="delta" id="aWrD"></div></div>
+    <div class="kpi"><label>Costs <b class="i" tabindex="0" id="aCostTip" data-tip="">i</b></label><div class="num neg" id="aFees">—</div><div class="delta" id="aFeesD"></div></div>
+    <div class="kpi"><label>Open</label><div class="num" id="aOpen">—</div><div class="delta" id="aOpenD"></div></div>
+  </div>
+  <div id="aPresets" class="presets"></div>
+  <h3>PULSE <b class="i" tabindex="0" data-tip="Three lanes like Axiom's Pulse: brand-new pairs, bonding curve 70-99%, and just migrated. PASS / HOLD / FAIL is the bot's call on each coin.">i</b></h3>
+  <div id="aLanes" class="lanes"></div>
+  <h3>WHAT IT LEARNED</h3>
+  <div id="aLearn" class="alearn"></div>
+  <h3>PASSED ON</h3>
+  <div id="aWhy" class="gate"></div>
+  <h3>TRADES</h3>
+  <div id="aTape" class="ltape"></div>
+</details>
+
+<details class="panel acc learn" id="p-learn">
+  <summary><b>LEARNER</b><span class="hl" id="sL">—</span></summary>
+  <div class="sub" id="lStatus"></div>
+  <div class="kpis lk">
+    <div class="kpi"><label>Balance</label><div class="num" id="lEq">—</div><div class="delta" id="lEqD"></div></div>
+    <div class="kpi"><label>Win rate</label><div class="num" id="lWr">—</div><div class="delta" id="lWrD"></div></div>
+    <div class="kpi"><label>Avg / trade</label><div class="num" id="lEv">—</div><div class="delta" id="lEvD"></div></div>
+    <div class="kpi"><label>Updates <b class="i" tabindex="0" data-tip="Each closed trade nudges its weights once.">i</b></label><div class="num" id="lUp">—</div><div class="delta" id="lUpD"></div></div>
+  </div>
+  <div class="honest" id="lHonest"></div>
+  <h3>RULES</h3>
+  <div id="lRules"></div>
+  <h3>RUG GUARD <b class="i" tabindex="0" data-tip="After every rug or crash it learns which entry features those coins shared and raises the bar for coins like them.">i</b></h3>
+  <div id="lRug"></div>
+  <h3>LEARNING CURVE <b class="i" tabindex="0" data-tip="Green: win rate, last 20 trades. Cyan: average result after fees, last 20. Dashed: break-even.">i</b></h3>
+  <div class="chartbox lc"><canvas id="lCurve"></canvas></div>
+  <div id="lWeights" class="wbars"></div>
+  <h3>SAFETY GATE</h3>
+  <div id="lGate" class="gate"></div>
+  <h3>TRADES</h3>
+  <div id="lTape" class="ltape"></div>
+</details>
+
+<details class="panel acc" id="p-degen">
+  <summary><b>DEGEN $100</b><span class="hl" id="sD">—</span></summary>
+  <div id="degen"></div>
+</details>
+
+<!-- DETAILS -->
+<details class="panel acc details" id="details">
+  <summary><b>DETAILS</b><span class="hl dim">rules · log · study · costs</span></summary>
+  <h3>thresholds.py</h3>
+  <div id="thr" class="thr"></div>
+  <h3>LOG</h3>
+  <div id="log" class="term"></div>
+  <h3>STUDY <b class="i" tabindex="0" data-tip="One-off study of recent Solana memecoins with the same costs and exit. Write-up: research/PUMP_STUDY.md.">i</b></h3>
+  <div id="lStudy" class="study">  <div id="lStudy" class="study"><!--STUDY--><div style='color:var(--grey);margin-bottom:6px'>556 brand-new coins tracked live (one $50 paper entry each, 10 Oct 00:00–01:00 London) + 218 coins that graduated from pump.fun in the 24 h before (514 entries). Same $50 size, same exit rule, full costs. A win = profit after all fees. Small groups are shaky, so treat these as hints, not laws.</div><table><thead><tr><th>GROUP</th><th>WIN RATE</th><th>TRADES</th><th>MEDIAN RESULT</th><th>NOTE</th></tr></thead><tbody><tr><td>All busy new coins (forward test)</td><td class='big'>16%</td><td>556</td><td class='neg'>-9%</td><td>median coin lost money after ~8% round-trip costs</td></tr><tr><td>Pool under $8k</td><td class='big'>8%</td><td>324</td><td class='neg'>-12%</td><td>fees + price impact eat thin pools alive</td></tr><tr><td>Pool $20-60k</td><td class='big'>45%</td><td>74</td><td class='neg'>-5%</td><td>best pool-size group</td></tr><tr><td>Still on bonding curve</td><td class='big'>10%</td><td>431</td><td class='neg'>-10%</td><td></td></tr><tr><td>Already graduated</td><td class='big'>38%</td><td>125</td><td class='neg'>-5%</td><td></td></tr><tr><td>Sellers in control (<45% buys)</td><td class='big'>4%</td><td>71</td><td class='neg'>-11%</td><td></td></tr><tr><td>60+ different buyers in 5 min</td><td class='big'>37%</td><td>118</td><td class='neg'>-5%</td><td></td></tr><tr><td>Bought 3 min after graduation</td><td class='big'>35%</td><td>214</td><td class='neg'>-8%</td><td>64% fell 50%+ within 30 min</td></tr><tr><td>Bought 60 min after graduation</td><td class='big'>9%</td><td>119</td><td class='neg'>-12%</td><td>the move is usually over</td></tr></tbody></table><!--/STUDY--></div>
+  <h3>COST MODEL</h3>
+  <div id="costline" class="small"></div>
+  <div class="small" id="updated"></div>
+</details>
+
+</main>
+
+<!-- TRADES PAGE -->
+<main id="pgTrades" hidden>
+  <section class="panel" id="p-alltrades">
+    <h2>ALL TRADES <em id="tCount"></em></h2>
+    <div id="tChips" class="tchips"></div>
+    <div id="tStats" class="tstats"></div>
+    <div class="tbar"><input id="tQ" type="search" placeholder="Search coin or reason" autocomplete="off">
+      <select id="tSort"><option value="new">Newest</option><option value="old">Oldest</option><option value="pnl">P&amp;L high</option><option value="pnll">P&amp;L low</option>
+        <option value="ret">% high</option><option value="size">Size</option><option value="fees">Fees</option><option value="hold">Hold time</option></select></div>
+    <div class="thead"><span>Time</span><span>Bot</span><span>Coin</span><span>Side</span><span>Size</span><span>Entry → exit</span><span>P&amp;L</span><span>Fees</span><span>Exit</span></div>
+    <div id="tList" class="tlist"></div>
+    <button id="tMore" class="tog more" type="button" hidden>Show more</button>
+  </section>
+</main>
+
+<footer>Paper trading only · public data · no keys, wallets or orders · not financial advice</footer>
+<script src="app.js?v=8f8a1ef7ad"></script>
+</body></html>
